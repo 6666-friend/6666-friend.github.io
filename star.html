@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>随机点名</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:40px;position:relative;overflow-x:hidden;}
+#display{font-size:60px;font-weight:700;color:#27ae60;margin-bottom:30px;height:80px;display:flex;align-items:center;justify-content:center;}
+.grid{display:grid;grid-template-columns:repeat(10,60px);gap:10px;margin:0 0 30px 0;}
+.btn{
+    width:60px;height:60px;border:none;border-radius:10px;background:#27ae60;color:#fff;
+    font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;transition:border .2s;box-sizing:border-box;
+}
+.btn.highlight{border:8px solid #1e8449;}
+
+/* 长方形圆角按钮 */
+#control{
+    padding:15px 60px;        /* 长方形 */
+    font-size:24px;
+    background:#27ae60;
+    color:#fff;
+    border:none;
+    border-radius:10px;       /* 圆角方形 */
+    cursor:pointer;
+    box-sizing:border-box;
+    transition:border .2s;
+}
+#control.highlight{border:8px solid #1e8449;padding:7px 52px;}
+
+/* 右上角关于按钮 */
+#aboutBtn{position:fixed;top:20px;right:20px;padding:8px 16px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;z-index:1000;transition:opacity .3s;}
+#aboutBtn.hide{opacity:0;pointer-events:none;}
+#sidebar{position:fixed;top:0;right:-250px;width:250px;height:100%;background:#f7f7f7;box-shadow:-2px 0 5px rgba(0,0,0,.2);transition:right .3s;padding:20px;display:flex;flex-direction:column;gap:10px;z-index:999;}
+#sidebar.open{right:0;}
+#sidebar button{padding:12px;border:none;border-radius:6px;background:#27ae60;color:#fff;font-size:16px;cursor:pointer;}
+#sidebar button:hover{background:#1e8449;}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:998;display:none;}
+#overlay.show{display:block;}
+</style>
+</head>
+<body>
+
+<button id="aboutBtn">关于</button>
+
+<div id="display"></div>   <!-- 首次为空 -->
+
+<div class="grid" id="grid"></div>
+<button id="control">开始</button>
+
+<!-- 侧边栏 -->
+<div id="sidebar">
+    <button id="authorBtn">作者</button>
+    <button id="sourceBtn">源码</button>
+    <button id="settingsBtn">设置</button>
+</div>
+<div id="overlay"></div>
+
+<script>
+/* ====== 渲染数字按钮 ====== */
+function renderGrid(max=50){
+    const grid=document.getElementById('grid');
+    grid.innerHTML='';
+    for(let i=1;i<=max;i++){
+        const b=document.createElement('div');
+        b.className='btn'; b.textContent=i; b.dataset.num=i;
+        grid.appendChild(b);
+    }
+}
+renderGrid();
+
+/* ====== 点名逻辑 ====== */
+const display=document.getElementById('display');
+const controlBtn=document.getElementById('control');
+let running=false;
+let timer=null;
+let currentNum=null;
+
+function highlight(el){
+    document.querySelectorAll('.btn, #control').forEach(e=>e.classList.remove('highlight'));
+    if(el) el.classList.add('highlight');
+}
+
+controlBtn.addEventListener('click',()=>{
+    if(!running){
+        running=true;
+        controlBtn.textContent='暂停';
+        timer=setInterval(()=>{
+            document.querySelectorAll('.btn').forEach(el=>el.classList.remove('highlight'));
+            currentNum=Math.floor(Math.random()*parseInt(localStorage.max||50))+1;
+            display.textContent=`点到了 ${currentNum}`;   // 运行中显示
+            const target=document.querySelector(`.btn[data-num="${currentNum}"]`);
+            highlight(target);
+        },100);
+    }else{
+        running=false;
+        controlBtn.textContent='开始';
+        clearInterval(timer);
+        display.textContent='点到了 开始';   // 暂停后文字
+        highlight(controlBtn);
+    }
+});
+
+/* ====== 侧边栏 ====== */
+const aboutBtn=document.getElementById('aboutBtn');
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+function toggleSidebar(show){
+    sidebar.classList.toggle('open',show);
+    overlay.classList.toggle('show',show);
+    aboutBtn.classList.toggle('hide',show);
+}
+aboutBtn.addEventListener('click',()=>toggleSidebar(true));
+overlay.addEventListener('click',()=>toggleSidebar(false));
+
+document.getElementById('authorBtn').addEventListener('click',()=>window.open('https://b23.tv/mttsnH7','_blank'));
+document.getElementById('sourceBtn').addEventListener('click',()=>window.open('https://github.com/1145Dragonp/74dmxt','_blank'));
+document.getElementById('settingsBtn').addEventListener('click',()=>{
+    const max=prompt('请输入最大数字（默认50）',localStorage.max||50);
+    if(max && !isNaN(max)){localStorage.max=max; renderGrid(parseInt(max));}
+});
+</script>
+</body>
+</html>
