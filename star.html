@@ -2,31 +2,39 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>随机点名（数字1.2倍）</title>
+<title>随机点名（外框高亮版）</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Arial,Helvetica,sans-serif;}
 body{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:60px;position:relative;overflow-x:hidden;}
-/* 顶部文字保持放大版 */
 #display{font-size:90px;font-weight:700;color:#27ae60;margin-bottom:50px;height:120px;display:flex;align-items:center;justify-content:center;}
 
-/* ===== 数字按钮改为 1.2 倍（原 60px→72px） ===== */
+/* 数字按钮 1.2 倍 */
 .grid{display:grid;grid-template-columns:repeat(10,72px);gap:12px;margin:0 0 50px 0;}
 .btn{
     width:72px;height:72px;border:none;border-radius:12px;background:#27ae60;color:#fff;
     font-size:29px;font-weight:700;display:flex;align-items:center;justify-content:center;
-    pointer-events:none;transition:border .2s;box-sizing:border-box;
+    position:relative;pointer-events:none;transition:all .2s;box-sizing:border-box;
 }
-.btn.highlight{border:10px solid #1e8449;}   /* 同步 1.2 倍边框 */
+.btn.highlight::before{
+    content:'';
+    position:absolute;
+    top:-6px;left:-6px;right:-6px;bottom:-6px;
+    border:6px solid #1e8449;
+    border-radius:18px;
+}
 
-/* 控制按钮保持放大版 */
+/* 控制按钮保持放大 */
 #control{
     padding:24px 120px;font-size:36px;background:#27ae60;color:#fff;border:none;
-    border-radius:15px;cursor:pointer;box-sizing:border-box;transition:border .2s;
+    border-radius:15px;cursor:pointer;transition:border .2s;
 }
-#control.highlight{border:12px solid #1e8449;padding:12px 108px;}
+#control.highlight{
+    border:12px solid #1e8449;
+    padding:12px 108px;
+}
 
-/* 其余样式不变（略） */
-#aboutBtn{position:fixed;top:30px;right:30px;padding:12px 24px;background:#27ae60;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:20px;z-index:1000;transition:opacity .3s;}
+/* 其余样式不变 */
+#aboutBtn{position:fixed;top:30px;right:30px;padding:12px 24px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:20px;z-index:1000;transition:opacity .3s;}
 #aboutBtn.hide{opacity:0;pointer-events:none;}
 #sidebar{position:fixed;top:0;right:-350px;width:350px;height:100%;background:#f7f7f7;box-shadow:-3px 0 8px rgba(0,0,0,.2);transition:right .3s;padding:40px;display:flex;flex-direction:column;gap:20px;z-index:999;}
 #sidebar.open{right:0;}
@@ -94,6 +102,7 @@ controlBtn.addEventListener('click',()=>{
     }
 });
 
+/* 侧边栏控制 */
 const aboutBtn=document.getElementById('aboutBtn');
 const sidebar=document.getElementById('sidebar');
 const overlay=document.getElementById('overlay');
