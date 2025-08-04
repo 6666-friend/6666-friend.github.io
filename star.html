@@ -2,54 +2,47 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>随机点名</title>
+<title>随机点名（数字1.2倍）</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
-body{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:40px;position:relative;overflow-x:hidden;}
-#display{font-size:60px;font-weight:700;color:#27ae60;margin-bottom:30px;height:80px;display:flex;align-items:center;justify-content:center;}
-.grid{display:grid;grid-template-columns:repeat(10,60px);gap:10px;margin:0 0 30px 0;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC",Arial,Helvetica,sans-serif;}
+body{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:60px;position:relative;overflow-x:hidden;}
+/* 顶部文字保持放大版 */
+#display{font-size:90px;font-weight:700;color:#27ae60;margin-bottom:50px;height:120px;display:flex;align-items:center;justify-content:center;}
+
+/* ===== 数字按钮改为 1.2 倍（原 60px→72px） ===== */
+.grid{display:grid;grid-template-columns:repeat(10,72px);gap:12px;margin:0 0 50px 0;}
 .btn{
-    width:60px;height:60px;border:none;border-radius:10px;background:#27ae60;color:#fff;
-    font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    width:72px;height:72px;border:none;border-radius:12px;background:#27ae60;color:#fff;
+    font-size:29px;font-weight:700;display:flex;align-items:center;justify-content:center;
     pointer-events:none;transition:border .2s;box-sizing:border-box;
 }
-.btn.highlight{border:8px solid #1e8449;}
+.btn.highlight{border:10px solid #1e8449;}   /* 同步 1.2 倍边框 */
 
-/* 长方形圆角按钮 */
+/* 控制按钮保持放大版 */
 #control{
-    padding:15px 60px;        /* 长方形 */
-    font-size:24px;
-    background:#27ae60;
-    color:#fff;
-    border:none;
-    border-radius:10px;       /* 圆角方形 */
-    cursor:pointer;
-    box-sizing:border-box;
-    transition:border .2s;
+    padding:24px 120px;font-size:36px;background:#27ae60;color:#fff;border:none;
+    border-radius:15px;cursor:pointer;box-sizing:border-box;transition:border .2s;
 }
-#control.highlight{border:8px solid #1e8449;padding:7px 52px;}
+#control.highlight{border:12px solid #1e8449;padding:12px 108px;}
 
-/* 右上角关于按钮 */
-#aboutBtn{position:fixed;top:20px;right:20px;padding:8px 16px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;z-index:1000;transition:opacity .3s;}
+/* 其余样式不变（略） */
+#aboutBtn{position:fixed;top:30px;right:30px;padding:12px 24px;background:#27ae60;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:20px;z-index:1000;transition:opacity .3s;}
 #aboutBtn.hide{opacity:0;pointer-events:none;}
-#sidebar{position:fixed;top:0;right:-250px;width:250px;height:100%;background:#f7f7f7;box-shadow:-2px 0 5px rgba(0,0,0,.2);transition:right .3s;padding:20px;display:flex;flex-direction:column;gap:10px;z-index:999;}
+#sidebar{position:fixed;top:0;right:-350px;width:350px;height:100%;background:#f7f7f7;box-shadow:-3px 0 8px rgba(0,0,0,.2);transition:right .3s;padding:40px;display:flex;flex-direction:column;gap:20px;z-index:999;}
 #sidebar.open{right:0;}
-#sidebar button{padding:12px;border:none;border-radius:6px;background:#27ae60;color:#fff;font-size:16px;cursor:pointer;}
+#sidebar button{padding:20px;border:none;border-radius:10px;background:#27ae60;color:#fff;font-size:24px;cursor:pointer;}
 #sidebar button:hover{background:#1e8449;}
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:998;display:none;}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:998;display:none;}
 #overlay.show{display:block;}
 </style>
 </head>
 <body>
 
 <button id="aboutBtn">关于</button>
-
-<div id="display"></div>   <!-- 首次为空 -->
-
+<div id="display"></div>
 <div class="grid" id="grid"></div>
 <button id="control">开始</button>
 
-<!-- 侧边栏 -->
 <div id="sidebar">
     <button id="authorBtn">作者</button>
     <button id="sourceBtn">源码</button>
@@ -58,7 +51,7 @@ body{background:#fff;display:flex;flex-direction:column;align-items:center;justi
 <div id="overlay"></div>
 
 <script>
-/* ====== 渲染数字按钮 ====== */
+/* 渲染 1.2 倍数字 */
 function renderGrid(max=50){
     const grid=document.getElementById('grid');
     grid.innerHTML='';
@@ -70,7 +63,6 @@ function renderGrid(max=50){
 }
 renderGrid();
 
-/* ====== 点名逻辑 ====== */
 const display=document.getElementById('display');
 const controlBtn=document.getElementById('control');
 let running=false;
@@ -89,7 +81,7 @@ controlBtn.addEventListener('click',()=>{
         timer=setInterval(()=>{
             document.querySelectorAll('.btn').forEach(el=>el.classList.remove('highlight'));
             currentNum=Math.floor(Math.random()*parseInt(localStorage.max||50))+1;
-            display.textContent=`点到了 ${currentNum}`;   // 运行中显示
+            display.textContent=`点到了 ${currentNum}`;
             const target=document.querySelector(`.btn[data-num="${currentNum}"]`);
             highlight(target);
         },100);
@@ -97,12 +89,11 @@ controlBtn.addEventListener('click',()=>{
         running=false;
         controlBtn.textContent='开始';
         clearInterval(timer);
-        display.textContent='点到了 开始';   // 暂停后文字
+        display.textContent='点到了 开始';
         highlight(controlBtn);
     }
 });
 
-/* ====== 侧边栏 ====== */
 const aboutBtn=document.getElementById('aboutBtn');
 const sidebar=document.getElementById('sidebar');
 const overlay=document.getElementById('overlay');
@@ -115,7 +106,7 @@ aboutBtn.addEventListener('click',()=>toggleSidebar(true));
 overlay.addEventListener('click',()=>toggleSidebar(false));
 
 document.getElementById('authorBtn').addEventListener('click',()=>window.open('https://b23.tv/mttsnH7','_blank'));
-document.getElementById('sourceBtn').addEventListener('click',()=>window.open('https://github.com/1145Dragonp/dmxt.github.io'));
+document.getElementById('sourceBtn').addEventListener('click',()=>window.open('https://github.com/1145Dragonp/74dmxt','_blank'));
 document.getElementById('settingsBtn').addEventListener('click',()=>{
     const max=prompt('请输入最大数字（默认50）',localStorage.max||50);
     if(max && !isNaN(max)){localStorage.max=max; renderGrid(parseInt(max));}
